@@ -1,0 +1,38 @@
+externs = {
+  "coin_min_spawn_time": 10,
+  "coin_max_spawn_time": 23,
+  "coin_min_elevation": 0,
+  "coin_max_elevation": 40,
+  "coin_min_speed": -3,
+  "coin_max_speed": -6,
+  "coin_pushback": 21,
+
+  "super_coin_percent": 20,
+  "super_coin_pushback": 55,
+
+  "obstacle_min_spawn_time": 3,
+  "obstacle_max_spawn_time": 6,
+  "obstacle_min_width": 8,
+  "obstacle_max_width": 32,
+  "obstacle_min_height": 32,
+  "obstacle_max_height": 75,
+  "obstacle_min_speed": -5,
+  "obstacle_max_speed": -8,
+
+  "player_size": 48,
+  "player_speed": 6,
+  "player_jump": 6,
+  "wave_speed": 0.1,
+
+  "powerup_speed": -7,
+  "powerup_min_spawn_time": 2.0,
+  "powerup_max_spawn_time": 2.5,
+
+  "powerup_double_jump_probability": 100,
+  "powerup_multi_jump_probability": 0,
+  "powerup_invincibility_probability": 0,
+
+  "powerup_double_jump_duration": 15,
+  "powerup_multi_jump_duration": 10,
+  "powerup_invincibility_duration": 10
+}

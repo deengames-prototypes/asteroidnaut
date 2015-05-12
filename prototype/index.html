@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				margin: 0px;
+			}
+		</style>
+
+		<script src="crafty-min.js"></script>
+		<script src="actor.js" type="text/javascript"></script>
+
+    <!-- Core game -->
+		<script type="text/javascript">
+ 			Game = {
+        // This defines our grid's size and the size of each of its tiles
+        view: {
+          width: 800,
+          height: 400,
+        },
+
+        start: function() {
+          Crafty.init(Game.view.width, Game.view.height);
+
+          var e = Crafty.e('Actor')
+            .size(64, 64)
+						.color('red')
+            .move(100, 100)
+						.move(0, 0, 3)
+						.controllable()
+						.collide('GREY', function() { console.log("grey") })
+						.collide('BLUE', function() { console.log("blue"); })
+						;
+
+					e.click(function() { e.die(); });
+
+					Crafty.e('Actor, GREY');
+					Crafty.e('2D, Canvas, Color, BLUE')
+						.attr({x: 76, y: 48, w: 4, h: 4, color: "blue"});
+        }
+      }
+
+			window.addEventListener('load', Game.start);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
