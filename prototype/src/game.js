@@ -31,20 +31,9 @@ Crafty.c('Player', {
       .controllable()
       .collide('Destruction', function() {
         gameOver();
-      }).onHit('Asteroid', function(data) {
-        var asteroid = data[0];
-        if (asteroid.normal.x != 0) {
-          // Sideways hit
-          this.vx = 0;
-        }
-        if (asteroid.normal.y == 1) {
-          // Player is under
-          this.vy *= -1;
-          this._dy = 0;
-        } else if (asteroid.normal.y == -1) {
-          // Player is on top
-        }
       })
+      .collideWith('Asteroid')
+      .collideWith('Wall')
       .gravity("Asteroid")
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
