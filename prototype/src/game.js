@@ -10,7 +10,12 @@ Game = {
     Crafty.background('black');
     Crafty.e('Player').move(150, 350);
     Crafty.e('Asteroid').move(150, 400);
-    Crafty.e('Destruction');
+    //Crafty.e('Destruction');
+
+    // Three invisible bounding walls: left, bottom, and right
+    Crafty.e('Actor, Wall').size(1, 600).move(0, 0); // left
+    Crafty.e('Actor, Wall').size(1, 600).move(299, 0); // right
+    Crafty.e('Actor, Wall').size(300, 1).move(0, 599); // bottom
   }
 }
 
@@ -26,6 +31,19 @@ Crafty.c('Player', {
       .controllable()
       .collide('Destruction', function() {
         gameOver();
+      }).onHit('Asteroid', function(data) {
+        var asteroid = data[0];
+        if (asteroid.normal.x != 0) {
+          // Sideways hit
+          this.vx = 0;
+        }
+        if (asteroid.normal.y == 1) {
+          // Player is under
+          this.vy *= -1;
+          this._dy = 0;
+        } else if (asteroid.normal.y == -1) {
+          // Player is on top
+        }
       })
       .gravity("Asteroid")
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
