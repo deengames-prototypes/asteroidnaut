@@ -18,14 +18,28 @@ window.addEventListener('load', Game.start);
 
 Crafty.c('Player', {
   init: function() {
-      this.requires('Actor, Gravity')
-        .size(32, 32)
-        .color('white')
-        .controllable()
-        .collide('Destruction', function() {
-          gameOver();
-        })
-        .gravity('Asteroid');
+    var self = this;
+
+    this.requires('Actor, Keyboard, Gravity')
+      .size(32, 32)
+      .color('white')
+      .controllable()
+      .collide('Destruction', function() {
+        gameOver();
+      })
+      .gravity("Asteroid")
+      // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
+      .bind("EnterFrame", function(frameData) {
+        if (this.isDown("W")) {
+          this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
+        }
+      })
+      .bind("CheckLanding", function(ground) {
+        // forbid landing, if player's feet are not above ground
+        if (this._y + this._h > ground._y + this._dy) {
+          this.canLand = false;
+        }
+      });
   }
 });
 
