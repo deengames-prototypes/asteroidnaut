@@ -55,20 +55,15 @@ Crafty.c('Actor', {
   collideWith: function(tag) {
     this.onHit(tag, function(data) {
   		var overlap = data[0].overlap;
+      var normal = data[0].normal;
   		// null: MBR collision. It's solid.
   		// magic number: prevent getting stuck in collisions.
   		var overlaps = (overlap == null || Math.abs(overlap) >= 1);
   		if ((this.vx != 0 || this.vy != 0) && overlaps) {
-  			this.x -= this.vx;
-  			if (this.hit(tag) != false) {
-  				this.x += this.vx;
-  				this.y -= this.vy;
-  				if (this.hit(tag) != false) {
-  					this.x -= this.vx;
-  				}
-  			}
-  		} else {
-  			this._speed = 0;
+  			this.x -= normal.x * overlap;
+        this.y -= normal.y * overlap;
+        if (normal.x != 0) { this.vx = 0; }
+        if (normal.y != 0) { this.vy = 0; }
   		}
   	});
     return this;
