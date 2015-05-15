@@ -50,8 +50,7 @@ Crafty.c('Actor', {
     return this;
   },
 
-  // Treat this as something to collide against and "bounce" off of
-  // We don't really bounce, we just stop
+  // Treat this as something to collide against stop when we hit it.
   collideWith: function(tag) {
     this.onHit(tag, function(data) {
   		var overlap = data[0].overlap;
@@ -60,10 +59,17 @@ Crafty.c('Actor', {
   		// magic number: prevent getting stuck in collisions.
   		var overlaps = (overlap == null || Math.abs(overlap) >= 1);
   		if ((this.vx != 0 || this.vy != 0) && overlaps) {
+        // Displace out so you no longer collide
   			this.x -= normal.x * overlap;
         this.y -= normal.y * overlap;
-        if (normal.x != 0) { this.vx = 0; }
-        if (normal.y != 0) { this.vy = 0; }
+
+        // Stop dead in your tracks
+        if (normal.x != 0) {
+          this.vx = 0;
+        }
+        if (normal.y != 0) {
+          this.vy = 0;
+        }
   		}
   	});
     return this;

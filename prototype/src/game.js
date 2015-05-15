@@ -34,19 +34,14 @@ Crafty.c('Player', {
       })
       .collideWith('Asteroid')
       .collideWith('Wall')
-      .gravity("Asteroid")
+      .gravity()
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
+        //console.debug("a=" + JSON.stringify(this._acceleration) + " v=" + JSON.stringify(this._velocity));
         if (this.isDown("W")) {
           this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
         }
       })
-      .bind("CheckLanding", function(ground) {
-        // forbid landing, if player's feet are not above ground
-        if (this._y + this._h > ground._y + this._dy) {
-          this.canLand = false;
-        }
-      });
   }
 });
 
