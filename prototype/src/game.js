@@ -37,7 +37,7 @@ Crafty.c('Player', {
       .gravity()
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
-        //console.debug("a=" + JSON.stringify(this._acceleration) + " v=" + JSON.stringify(this._velocity));
+        console.debug("a=" + JSON.stringify(this._acceleration) + " v=" + JSON.stringify(this._velocity));
         if (this.isDown("W")) {
           this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
         }

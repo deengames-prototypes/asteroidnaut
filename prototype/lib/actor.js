@@ -52,26 +52,21 @@ Crafty.c('Actor', {
 
   // Treat this as something to collide against stop when we hit it.
   collideWith: function(tag) {
-    this.onHit(tag, function(data) {
-  		var overlap = data[0].overlap;
-      var normal = data[0].normal;
-  		// null: MBR collision. It's solid.
-  		// magic number: prevent getting stuck in collisions.
-  		var overlaps = (overlap == null || Math.abs(overlap) >= 1);
-  		if ((this.vx != 0 || this.vy != 0) && overlaps) {
-        // Displace out so you no longer collide
-  			this.x -= normal.x * overlap;
-        this.y -= normal.y * overlap;
-
-        // Stop dead in your tracks
-        if (normal.x != 0) {
-          this.vx = 0;
-        }
-        if (normal.y != 0) {
-          this.vy = 0;
-        }
-  		}
-  	});
+    this.bind("Moved", function(evt) {
+	  // https://github.com/craftyjs/Crafty/issues/903#issuecomment-102634417
+	  
+      if (this.hit(tag)) {
+        this[evt.axis] = evt.oldValue;
+		
+		if (evt.axis === "x") {
+			this.vx = 0;
+		}
+		
+        if (evt.axis === "y") {
+			this.vy = 0;
+		}
+      }
+    });
     return this;
   },
 
