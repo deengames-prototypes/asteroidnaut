@@ -8,14 +8,21 @@ Game = {
   start: function() {
     Crafty.init(Game.view.width, Game.view.height);
     Crafty.background('black');
-    Crafty.e('Player').move(150, 350);
+    var player = Crafty.e('Player').move(150, 350);
     Crafty.e('Asteroid').move(150, 400);
-    //Crafty.e('Destruction');
+    Crafty.e('Destruction');
 
-    // Three invisible bounding walls: left, bottom, and right
-    Crafty.e('Actor, Wall').size(1, 600).move(0, 0); // left
-    Crafty.e('Actor, Wall').size(1, 600).move(299, 0); // right
-    Crafty.e('Actor, Wall').size(300, 1).move(0, 599); // bottom
+    // Left wall
+    Crafty.e('Actor, Wall').size(1, 600).move(-1, 0)
+      .bind('ViewportScroll', function() {
+      this.y = -Crafty.viewport.y;
+    });
+    // Right wall
+    Crafty.e('Actor, Wall').size(1, 600).move(300, 0)
+      .bind('ViewportScroll', function() {
+        this.y = -Crafty.viewport.y;
+      });
+    Crafty.viewport.follow(player);
   }
 }
 
@@ -69,5 +76,5 @@ function gameOver() {
   Crafty.e('Actor, Text')
     .text("U DIED!")
     .textFont({ size: '72px' })
-    .move(16, 200);
+    .move(16, -Crafty.viewport.y + 200);
 }
