@@ -53,18 +53,9 @@ Crafty.c('Actor', {
   // Treat this as something to collide against stop when we hit it.
   collideWith: function(tag) {
     this.bind("Moved", function(evt) {
-	  // https://github.com/craftyjs/Crafty/issues/903#issuecomment-102634417
-	  
       if (this.hit(tag)) {
         this[evt.axis] = evt.oldValue;
-		
-		if (evt.axis === "x") {
-			this.vx = 0;
-		}
-		
-        if (evt.axis === "y") {
-			this.vy = 0;
-		}
+        if (evt.axis === "y") this.vy = 0;
       }
     });
     return this;
