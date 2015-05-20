@@ -34,6 +34,9 @@ Game = {
         .bind('ViewportScroll', function() {
           this.y = -Crafty.viewport.y;
         });
+
+      Crafty.e('Spawner').spawn('Asteroid').between(extern('asteroid_spawn_min'), extern('asteroid_spawn_max'));
+
       Crafty.viewport.follow(player);
     });
   }
@@ -74,7 +77,10 @@ Crafty.c('Player', {
 Crafty.c('Asteroid', {
   init: function() {
     this.requires('Actor')
-      .color('#888888').size(64, 24);
+      .color('#888888').size(64, 24)
+      // x: somewhere on-screen
+      // Y: above the top of the screen (hence -100), up to ~600px up.
+      .move(randomBetween(0, 300 - 64), -Crafty.viewport.y - randomBetween(100, 600));
   }
 });
 
@@ -85,7 +91,7 @@ Crafty.c('Destruction', {
         .size(300, 64)
         .move(0, 600 - 64)
         .bind('EnterFrame', function() {
-          this.y -= 1;
+          this.y -= extern('destruction_speed');
         })
   }
 });
