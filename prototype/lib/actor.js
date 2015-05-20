@@ -42,16 +42,20 @@ Crafty.c('Actor', {
     return this;
   },
 
-  // Execute a callback when collides with an entity with the tag in it
+  // Execute a callback when collides with an entity with the tag in it. This
+  // doesn't resolve the collision so that we're no longer overlapping the target.
   collide: function(tag, callback) {
     this.onHit(tag, function(data) {
-      callback();
+      if (callback != null) {
+        callback();
+      }
     });
     return this;
   },
 
-  // Treat this as something to collide against stop when we hit it.
-  collideWith: function(tag) {
+  // Collide against a solid object, and resolve the collision so that we're no
+  // longer overlapping with the target.
+  collideWith: function(tag, callback) {
     this.bind("Moved", function(evt) {
       if (this.hit(tag)) {
         this[evt.axis] = evt.oldValue;

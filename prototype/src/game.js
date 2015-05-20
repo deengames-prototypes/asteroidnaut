@@ -65,7 +65,9 @@ Crafty.c('Player', {
       .collide('Destruction', function() {
         gameOver();
       })
-      .collideWith('Asteroid')
+      .collideWith('Asteroid', function() {
+          console.log("BUMP");
+      })
       .collideWith('Wall')
       .gravity()
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
