@@ -25,14 +25,14 @@ Game = {
       Crafty.e('Destruction');
 
       // Left wall
-      Crafty.e('Actor, Wall').size(1, 600).move(-1, 0)
+      Crafty.e('Actor, Wall').size(1, 600).move(1, 0)
         .bind('ViewportScroll', function() {
         this.y = -Crafty.viewport.y;
       });
       // Right wall
       Crafty.e('Actor, Wall').size(1, 600).move(300, 0)
         .bind('ViewportScroll', function() {
-          this.y = -(Crafty.viewport.y / 2);
+          this.y = -Crafty.viewport.y;
         });
       Crafty.viewport.follow(player);
     });
