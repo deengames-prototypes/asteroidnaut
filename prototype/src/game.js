@@ -21,7 +21,10 @@ Game = {
       });
 
       var player = Crafty.e('Player').move(150, 350);
-      Crafty.e('Asteroid').move(150, 400);
+
+      // Starting asteroid
+      Crafty.e('Asteroid').size(64, 24).move(150, 400).velocity(0, 0);
+
       Crafty.e('Destruction');
 
       // Left wall
@@ -77,7 +80,8 @@ Crafty.c('Player', {
 Crafty.c('Asteroid', {
   init: function() {
     this.requires('Actor')
-      .color('#888888').size(64, 24)
+      .color('#888888')
+      .size(randomBetween(24, 64), randomBetween(24, 64))
       // x: somewhere on-screen
       // Y: above the top of the screen (hence -100), up to ~600px up.
       .move(randomBetween(0, 300 - 64), -Crafty.viewport.y - randomBetween(100, 600));
