@@ -24,6 +24,6 @@ function loadScript(url, callback)
 externs = { };
 loadScript('external.json');
 
-loadScript('helpers.js');
-loadScript('actor.js');
-loadScript('spawner.js');
+loadScript('lib/helpers.js');
+loadScript('lib/actor.js');
+loadScript('lib/spawner.js');

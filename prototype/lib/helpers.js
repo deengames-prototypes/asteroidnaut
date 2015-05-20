@@ -25,6 +25,7 @@ function loadImages(images, callback) {
       }
     }, function(p) {
       // p.percent gives us progress
+      console.log(p.percent + "% loaded");
     }, function(e) {
       alert("Error loading images: " + e);
     }

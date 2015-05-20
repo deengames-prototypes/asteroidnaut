@@ -7,32 +7,35 @@ Game = {
 
   start: function() {
     Crafty.init(Game.view.width, Game.view.height);
+    loadImages(['images/background.jpg'], function() {
 
-    Crafty.e('Background').bind('ViewportScroll', function() {
-      this.y = 0 - (Math.round(Crafty.viewport.y / 600) * 600);
-      console.log("B1 is at " + this.y);
-    });
-
-    Crafty.e('Background').bind('ViewportScroll', function() {
-      this.y = 600 - (Math.round(Crafty.viewport.y / 600) * 600);
-      console.log("B2 is at " + this.y);
-    });
-
-    var player = Crafty.e('Player').move(150, 350);
-    Crafty.e('Asteroid').move(150, 400);
-    Crafty.e('Destruction');
-
-    // Left wall
-    Crafty.e('Actor, Wall').size(1, 600).move(-1, 0)
-      .bind('ViewportScroll', function() {
-      this.y = -Crafty.viewport.y;
-    });
-    // Right wall
-    Crafty.e('Actor, Wall').size(1, 600).move(300, 0)
-      .bind('ViewportScroll', function() {
-        this.y = -(Crafty.viewport.y / 2);
+      // y: 0, -1200, -2400, ...
+      Crafty.e('Background').bind('ViewportScroll', function() {
+        this.y = 0 - (Math.round(Crafty.viewport.y / 1200) * 1200);
       });
-    Crafty.viewport.follow(player);
+
+      // y: -600, -1800, -3000, ...
+      Crafty.e('Background').bind('ViewportScroll', function() {
+        var oldY = this.y;
+        this.y = -600 - (Math.round((Crafty.viewport.y - 600) / 1200) * 1200);
+      });
+
+      var player = Crafty.e('Player').move(150, 350);
+      Crafty.e('Asteroid').move(150, 400);
+      Crafty.e('Destruction');
+
+      // Left wall
+      Crafty.e('Actor, Wall').size(1, 600).move(-1, 0)
+        .bind('ViewportScroll', function() {
+        this.y = -Crafty.viewport.y;
+      });
+      // Right wall
+      Crafty.e('Actor, Wall').size(1, 600).move(300, 0)
+        .bind('ViewportScroll', function() {
+          this.y = -(Crafty.viewport.y / 2);
+        });
+      Crafty.viewport.follow(player);
+    });
   }
 }
 
@@ -61,7 +64,6 @@ Crafty.c('Player', {
       .gravity()
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
-        console.debug("a=" + JSON.stringify(this._acceleration) + " v=" + JSON.stringify(this._velocity));
         if (this.isDown("W")) {
           this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
         }
