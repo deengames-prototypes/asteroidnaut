@@ -1,3 +1,5 @@
+/// A collection of random functions. See below.
+
 // Inclusive of a, exclusive of b
 // AKA: [a, b)
 // AKA: a <= n < b

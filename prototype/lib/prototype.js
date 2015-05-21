@@ -27,3 +27,4 @@ loadScript('external.json');
 loadScript('lib/helpers.js');
 loadScript('lib/actor.js');
 loadScript('lib/spawner.js');
+loadScript('lib/console.js');
