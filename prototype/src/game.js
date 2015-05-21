@@ -80,6 +80,14 @@ Crafty.c('Player', {
           this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
           this.onAsteroid = null;
         }
+
+        if (this.isDown('SPACE') && this.onAsteroid != null && this.onAsteroid.health > 0) {
+          this.onAsteroid.health -= 1;
+          if (this.onAsteroid.health == 0) {
+            this.onAsteroid.color('#222222');
+          }
+          console.log(this.onAsteroid.health);
+        }
       })
   }
 });
@@ -92,6 +100,13 @@ Crafty.c('Asteroid', {
       // x: somewhere on-screen
       // Y: above the top of the screen (hence -100), up to ~600px up.
       .move(randomBetween(0, 400 - 64), -Crafty.viewport.y - randomBetween(100, 600));
+
+    // Smallest (24x24) has 15 health (~0.5s to mine)
+    // Largest (64x64) has 30 health (~1s to mine)
+    // Try to map linearly the size from [576, 4096] to the range [0.5, 1.25]
+    // This formula is flawed. Oh well.
+    this.health = 0.5 + (this.w * this.h) / (64*64) * (1.25 - 0.5);
+    this.health = Math.round(30 * this.health);
   }
 });
 
