@@ -44,6 +44,7 @@ Crafty.c('Actor', {
 
   // Execute a callback when collides with an entity with the tag in it. This
   // doesn't resolve the collision so that we're no longer overlapping the target.
+  // If you want to displace out of the object, use collideWith.
   collide: function(tag, callback) {
     this.onHit(tag, function(data) {
       if (callback != null) {
@@ -54,12 +55,23 @@ Crafty.c('Actor', {
   },
 
   // Collide against a solid object, and resolve the collision so that we're no
-  // longer overlapping with the target.
+  // longer overlapping with the target. For non-resolving, use collide.
+  // The callback receives an object (the thing that's hit).
   collideWith: function(tag, callback) {
     this.bind("Moved", function(evt) {
-      if (this.hit(tag)) {
+      var hitData = this.hit(tag);
+      if (hitData != false) {
+        // displace backward so we're no longer overlapping
         this[evt.axis] = evt.oldValue;
+        // stop, even with gravity
         if (evt.axis === "y") this.vy = 0;
+
+        if (callback != null) {
+          // Invoke callback once per object hit
+          for (var i = 0; i < hitData.length; i++) {
+            callback(hitData[i]);
+          }
+        }
       }
     });
     return this;

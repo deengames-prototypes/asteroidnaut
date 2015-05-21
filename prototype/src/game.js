@@ -1,7 +1,7 @@
 Game = {
   // This defines our grid's size and the size of each of its tiles
   view: {
-    width: 300,
+    width: 400,
     height: 600,
   },
 
@@ -14,7 +14,7 @@ Game = {
         this.y = 0 - (Math.round(Crafty.viewport.y / 1200) * 1200);
       });
 
-      // y: -600, -1800, -3000, ...
+      // y: -600, -1800, -4000, ...
       Crafty.e('Background').bind('ViewportScroll', function() {
         var oldY = this.y;
         this.y = -600 - (Math.round((Crafty.viewport.y - 600) / 1200) * 1200);
@@ -33,7 +33,7 @@ Game = {
         this.y = -Crafty.viewport.y;
       });
       // Right wall
-      Crafty.e('Actor, Wall').size(1, 600).move(300, 0)
+      Crafty.e('Actor, Wall').size(1, 600).move(400, 0)
         .bind('ViewportScroll', function() {
           this.y = -Crafty.viewport.y;
         });
@@ -49,7 +49,7 @@ window.addEventListener('load', Game.start);
 
 Crafty.c('Background', {
   init: function() {
-    this.requires('Actor, Image').size(300, 600)
+    this.requires('Actor, Image').size(400, 600)
       .image('images/background.jpg', 'repeat-y');
   }
 });
@@ -65,8 +65,12 @@ Crafty.c('Player', {
       .collide('Destruction', function() {
         gameOver();
       })
-      .collideWith('Asteroid', function() {
-          console.log("BUMP");
+      .collideWith('Asteroid', function(x) {
+        // this._vy is 0 when we're standing still on an asteroid
+        // it's not reliable, but keyboard input is.
+        if (self._velocity.y == 0 && !self.isDown('W')) {
+          self.onAsteroid = x.obj;
+        }
       })
       .collideWith('Wall')
       .gravity()
@@ -74,6 +78,7 @@ Crafty.c('Player', {
       .bind("EnterFrame", function(frameData) {
         if (this.isDown("W")) {
           this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
+          this.onAsteroid = null;
         }
       })
   }
@@ -86,7 +91,7 @@ Crafty.c('Asteroid', {
       .size(randomBetween(24, 64), randomBetween(24, 64))
       // x: somewhere on-screen
       // Y: above the top of the screen (hence -100), up to ~600px up.
-      .move(randomBetween(0, 300 - 64), -Crafty.viewport.y - randomBetween(100, 600));
+      .move(randomBetween(0, 400 - 64), -Crafty.viewport.y - randomBetween(100, 600));
   }
 });
 
@@ -94,7 +99,7 @@ Crafty.c('Destruction', {
   init: function() {
       this.requires('Actor')
         .color('red')
-        .size(300, 64)
+        .size(400, 64)
         .move(0, 600 - 64)
         .bind('EnterFrame', function() {
           this.y -= extern('destruction_speed');
