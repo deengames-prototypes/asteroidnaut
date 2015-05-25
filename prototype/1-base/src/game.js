@@ -163,9 +163,10 @@ Crafty.c('Destruction', {
 });
 
 function gameOver() {
+  var points = Crafty('Player').points;
   Crafty('Player').destroy();
   Crafty.e('Actor, Text')
-    .text("DIED!")
+    .text(points + " points!")
     .textFont({ size: '72px', color: 'white' })
     .move(16, -Crafty.viewport.y + 200);
 }
