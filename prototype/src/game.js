@@ -1,3 +1,4 @@
+
 Game = {
   // This defines our grid's size and the size of each of its tiles
   view: {
@@ -65,11 +66,17 @@ Crafty.c('Player', {
       .collide('Destruction', function() {
         gameOver();
       })
-      .collideWith('Asteroid', function(x) {
+      .collideWith('Asteroid', function(a) {
         // this._vy is 0 when we're standing still on an asteroid
         // it's not reliable, but keyboard input is.
         if (self._velocity.y == 0 && !self.isDown('W')) {
-          self.onAsteroid = x.obj;
+          self.onAsteroid = a.obj;
+        }
+
+        if (self.y > a.obj.y // Player is under. Or possibly beside, too.
+           && self._velocity.y == 0) { // vY is always zero when bumping the
+           // asteroid from below or standing on it. Not when you slide past it.
+           self._velocity.y = extern('knockback_velocity');
         }
       })
       .collideWith('Wall')
@@ -125,7 +132,7 @@ Crafty.c('Destruction', {
 function gameOver() {
   Crafty('Player').destroy();
   Crafty.e('Actor, Text')
-    .text("U DIED!")
+    .text("DIED!")
     .textFont({ size: '72px' })
     .move(16, -Crafty.viewport.y + 200);
 }
