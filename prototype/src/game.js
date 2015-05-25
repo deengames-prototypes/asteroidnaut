@@ -43,6 +43,14 @@ Game = {
 
       Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
 
+      Crafty.e('Actor, Text').textFont({ size: '18px' })
+        .bind('EnterFrame', function() {
+          this.move(0, -Crafty.viewport.y);
+          if (Crafty('Player') != null && Crafty('Player').points != null) {
+            this.text(Crafty('Player').points + " points");
+          }
+      });
+
       Crafty.viewport.follow(player);
     });
   }
@@ -60,6 +68,7 @@ Crafty.c('Background', {
 Crafty.c('Player', {
   init: function() {
     var self = this;
+    this.points = 0;
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -89,7 +98,9 @@ Crafty.c('Player', {
 
         if (this.isDown('SPACE') && this.onAsteroid != null && this.onAsteroid.health > 0) {
           this.onAsteroid.health -= 1;
+          this.points += 1;
           if (this.onAsteroid.health == 0) {
+            this.points += 10;
             this.onAsteroid.color('#222222');
           }
           console.log(this.onAsteroid.health);
@@ -118,6 +129,7 @@ Crafty.c('Asteroid', {
 
 Crafty.c('Enemy', {
   init: function() {
+    var self = this;
     this.requires('Actor')
       .color('green')
       .size(randomBetween(24, 32), 18)
@@ -129,8 +141,8 @@ Crafty.c('Enemy', {
           this.die();
         }
       }).collide('Player', function() {
+        self.die();
         gameOver();
-        this.die();
       });
   }
 });
@@ -154,6 +166,6 @@ function gameOver() {
   Crafty('Player').destroy();
   Crafty.e('Actor, Text')
     .text("DIED!")
-    .textFont({ size: '72px' })
+    .textFont({ size: '72px', color: 'white' })
     .move(16, -Crafty.viewport.y + 200);
 }
