@@ -12,13 +12,13 @@ Game = {
 
       // y: 0, -1200, -2400, ...
       Crafty.e('Background').bind('ViewportScroll', function() {
-        this.y = 0 - (Math.round(Crafty.viewport.y / 1200) * 1200);
+        this.y = 0 - (Math.round(Crafty.viewport.y / (2 * Game.view.height)) * (2 * Game.view.height));
       });
 
       // y: -600, -1800, -4000, ...
       Crafty.e('Background').bind('ViewportScroll', function() {
         var oldY = this.y;
-        this.y = -600 - (Math.round((Crafty.viewport.y - 600) / 1200) * 1200);
+        this.y = -Game.view.height - (Math.round((Crafty.viewport.y - Game.view.height) / (2 * Game.view.height)) * (2 * Game.view.height));
       });
 
       var player = Crafty.e('Player').move(150, 350);
@@ -29,17 +29,19 @@ Game = {
       Crafty.e('Destruction');
 
       // Left wall
-      Crafty.e('Actor, Wall').size(1, 600).move(1, 0)
+      Crafty.e('Actor, Wall').size(1, Game.view.height).move(1, 0)
         .bind('ViewportScroll', function() {
         this.y = -Crafty.viewport.y;
       });
       // Right wall
-      Crafty.e('Actor, Wall').size(1, 600).move(400, 0)
+      Crafty.e('Actor, Wall').size(1, Game.view.height).move(Game.view.width, 0)
         .bind('ViewportScroll', function() {
           this.y = -Crafty.viewport.y;
         });
 
       Crafty.e('Spawner').spawn('Asteroid').between(extern('asteroid_spawn_min'), extern('asteroid_spawn_max'));
+
+      Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
 
       Crafty.viewport.follow(player);
     });
@@ -50,7 +52,7 @@ window.addEventListener('load', Game.start);
 
 Crafty.c('Background', {
   init: function() {
-    this.requires('Actor, Image').size(400, 600)
+    this.requires('Actor, Image').size(Game.view.width, Game.view.height)
       .image('images/background.jpg', 'repeat-y');
   }
 });
@@ -63,9 +65,6 @@ Crafty.c('Player', {
       .size(32, 32)
       .color('white')
       .controllable()
-      .collide('Destruction', function() {
-        gameOver();
-      })
       .collideWith('Asteroid', function(a) {
         // this._vy is 0 when we're standing still on an asteroid
         // it's not reliable, but keyboard input is.
@@ -106,7 +105,7 @@ Crafty.c('Asteroid', {
       .size(randomBetween(24, 64), randomBetween(24, 64))
       // x: somewhere on-screen
       // Y: above the top of the screen (hence -100), up to ~600px up.
-      .move(randomBetween(0, 400 - 64), -Crafty.viewport.y - randomBetween(100, 600));
+      .move(randomBetween(0, Game.view.width - 64), -Crafty.viewport.y - randomBetween(100, Game.view.height));
 
     // Smallest (24x24) has 15 health (~0.5s to mine)
     // Largest (64x64) has 30 health (~1s to mine)
@@ -117,15 +116,37 @@ Crafty.c('Asteroid', {
   }
 });
 
+Crafty.c('Enemy', {
+  init: function() {
+    this.requires('Actor')
+      .color('green')
+      .size(randomBetween(24, 32), 18)
+      // Left or right side; within +/- px of the height of the player
+      .move(randomBetween(0, 100) <= 50 ? Game.view.width - 32 : 0, Crafty('Player').y + randomBetween(-100, 100))
+      .velocity(this.x == 0 ? extern('enemy_speed') : -extern('enemy_speed'))
+      .bind('EnterFrame', function() {
+        if (this.x < 0 || this.x > Game.view.width) {
+          this.die();
+        }
+      }).collide('Player', function() {
+        gameOver();
+        this.die();
+      });
+  }
+});
+
 Crafty.c('Destruction', {
   init: function() {
       this.requires('Actor')
         .color('red')
-        .size(400, 64)
-        .move(0, 600 - 64)
+        .size(Game.view.width, 64)
+        .move(0, Game.view.height - 64)
         .bind('EnterFrame', function() {
           this.y -= extern('destruction_speed');
         })
+        .collide('Player', function() {
+          gameOver();
+        });
   }
 });
 
