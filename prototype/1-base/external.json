@@ -1,9 +1,9 @@
 externs = {
   "destruction_speed": 4,
 
-  "asteroid_spawn_min": 0.5,
-  "asteroid_spawn_max": 2,
-  "knockback_velocity": 7,
+  "asteroid_spawn_min": 0.25,
+  "asteroid_spawn_max": 0.5,
+  "knockback_velocity": 10,
 
   "enemy_spawn_min": 3,
   "enemy_spawn_max": 7,
