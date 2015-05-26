@@ -133,8 +133,8 @@ Crafty.c('Enemy', {
     this.requires('Actor')
       .color('green')
       .size(randomBetween(24, 32), 18)
-      // Left or right side; within +/- px of the height of the player
-      .move(randomBetween(0, 100) <= 50 ? Game.view.width - 32 : 0, Crafty('Player').y + randomBetween(-100, 100))
+      // x: left or right side; y: Player's y, plus higher.
+      .move(randomBetween(0, 100) <= 50 ? Game.view.width - 32 : 0, Crafty('Player').y + randomBetween(100, -300))
       .velocity(this.x == 0 ? extern('enemy_speed') : -extern('enemy_speed'))
       .bind('EnterFrame', function() {
         if (this.x < 0 || this.x > Game.view.width) {
@@ -142,7 +142,18 @@ Crafty.c('Enemy', {
         }
       }).collide('Player', function() {
         self.die();
-        gameOver();
+        //var v = self.v.x > 0 ? 1 : -1;
+        //var delta = v * extern('enemy_knockback');
+        p = Crafty('Player');
+        // FREEZE!
+        p.move(p.x, p.y, extern('freeze_duration'));
+        if (extern('enemies_kill') == true)
+        {
+          gameOver();
+        }
+        //p.velocity(p._velocity.x + delta, p._velocity.y);
+        //p.move(p.x + v * extern('enemy_knockback'), p.y + p._velocity.y, 0.5);
+        //p._velocity.x += v * extern('enemy_knockback');
       });
   }
 });

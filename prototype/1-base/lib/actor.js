@@ -119,7 +119,7 @@ Crafty.c('Actor', {
 
 // Overrides for built-in functions like 'move', etc.
 Crafty.c('Moveable', {
-  // Tween to location in T seconds (defaults to 1s)
+  // Tween to location in T fractional seconds (defaults to 1.0s)
   move: function(x, y, t, callback) {
     if (t == null || t == 0) {
       this.attr({ x: x, y: y });
