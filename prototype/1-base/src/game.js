@@ -84,15 +84,15 @@ Crafty.c('Player', {
         if (self.y > a.obj.y // Player is under. Or possibly beside, too.
            && self._velocity.y == 0) { // vY is always zero when bumping the
            // asteroid from below or standing on it. Not when you slide past it.
-           self._velocity.y = extern('knockback_velocity');
+           self._velocity.y = extern('asteroid_knockback');
         }
       })
       .collideWith('Wall')
       .gravity()
       // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
-        if (this.isDown("W")) {
-          this.vy = Math.max(-5, this._vy - 2.5); // apply upward velocity gradually to cap
+        if (this.isDown("W") || this.isDown("UP_ARROW")) {
+          this.vy = Math.max(-7, this._vy - 0.5); // apply upward velocity gradually to cap
           this.onAsteroid = null;
         }
 
