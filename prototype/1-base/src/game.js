@@ -24,7 +24,7 @@ Game = {
       var player = Crafty.e('Player').move(150, 350);
 
       // Starting asteroid
-      Crafty.e('Asteroid').size(64, 24).move(150, 400).velocity(0, 0);
+      //Crafty.e('Asteroid').size(64, 24).move(150, 400).velocity(0, 0);
 
       Crafty.e('Destruction');
 
@@ -39,7 +39,7 @@ Game = {
           this.y = -Crafty.viewport.y;
         });
 
-      Crafty.e('Spawner').spawn('Asteroid').between(extern('asteroid_spawn_min'), extern('asteroid_spawn_max'));
+      Crafty.e('AsteroidManager');
 
       Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
 
@@ -50,6 +50,10 @@ Game = {
             this.text(Crafty('Player').points + " points");
           }
       });
+
+      Crafty.e('Actor').repeatedly(function() {
+        console.debug(Crafty.viewport.y);
+      }, 1);
 
       Crafty.viewport.follow(player);
     });
@@ -124,6 +128,32 @@ Crafty.c('Asteroid', {
     // This formula is flawed. Oh well.
     this.health = 0.5 + (this.w * this.h) / (64*64) * (1.25 - 0.5);
     this.health = Math.round(30 * this.health);
+
+    this.bind('EnterFrame', function() {
+      console.debug(Math.round(this.y) + " >= " + -Math.round(Crafty.viewport.y - Crafty.viewport.height));
+
+      if (this.y >= -(Crafty.viewport.y - Crafty.viewport.height)) {
+        this.die();
+      }
+    })
+  }
+});
+
+// Make sure the right number of asteriods exist at all times. Asteroids die
+// when they fall off-screen. We spawn new ones out of sight when that happens.
+Crafty.c('AsteroidManager', {
+  init: function() {
+    this.requires('Actor').size(1, 1).color('blue');
+
+    this.bind('EnterFrame', function() {
+      var actual = Crafty('Asteroid').length;
+      var expected = extern('asteroids');
+
+      for (var i = 0; i < expected - actual; i++) {
+        var a = Crafty.e('Asteroid');
+        console.log('Created asteroid at y=' + Math.round(a.y));
+      }
+    });
   }
 });
 
