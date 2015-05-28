@@ -44,7 +44,7 @@ Game = {
 
       Crafty.e('AsteroidManager');
 
-      Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
+      //Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
 
       Crafty.e('Actor, Text').textFont({ size: '18px' })
         .bind('EnterFrame', function() {
