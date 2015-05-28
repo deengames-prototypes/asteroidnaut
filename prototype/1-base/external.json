@@ -1,7 +1,7 @@
 externs = {
   "destruction_speed": 4,
 
-  "asteroids": 1,
+  "asteroids": 15,
   "asteroid_knockback": 5,
 
   "enemy_spawn_min": 3,
