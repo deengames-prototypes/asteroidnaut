@@ -54,6 +54,14 @@ Game = {
           }
       });
 
+      Crafty.e('Actor, Text').textFont({ size: '14px' })
+        .bind('EnterFrame', function() {
+          this.move(Game.view.width - 100, -Crafty.viewport.y);
+          if (Crafty('Player') != null && Crafty('Player').points != null) {
+            this.text("Altitude: " + Math.round(Crafty.viewport.y));
+          }
+      });
+
       Crafty.viewport.follow(player);
     });
   }
