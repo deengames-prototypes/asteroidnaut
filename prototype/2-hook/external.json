@@ -1,0 +1,13 @@
+externs = {
+  "destruction_speed": 4,
+
+  "asteroids": 15,
+  "asteroid_knockback": 5,
+
+  "enemy_spawn_min": 3,
+  "enemy_spawn_max": 7,
+  "enemy_speed": 10,
+
+  "freeze_duration": 0.5,
+  "enemies_kill": false
+}
