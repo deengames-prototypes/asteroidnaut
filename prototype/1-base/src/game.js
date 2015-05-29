@@ -122,15 +122,19 @@ Crafty.c('Player', {
 
 Crafty.c('Asteroid', {
   init: function() {
+    var self = this;
     this.requires('Actor');
-    this.idz = Crafty('Asteroid').length + 1;
     this.regenerate();
 
     this.bind('EnterFrame', function() {
       if (this.y >= -(Crafty.viewport.y - Crafty.viewport.height)) {
         this.regenerate();
       }
-    })
+    });
+
+    this.collide('Asteroid', function(a) {
+      self.regenerate();
+    });
   },
 
   regenerate: function() {
