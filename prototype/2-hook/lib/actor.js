@@ -33,10 +33,11 @@ Crafty.c('Actor', {
     }
   },
 
-  // Execute a callback when clicked on
+  // Execute a callback when clicked on. Technically, when you press the mouse
+  // down (anywhere), hover it over this entity, and then release. #derp
+  // See: mouseDown
   click: function(callback) {
     this.requires('Mouse').bind('Click', function() {
-      console.log("Clicked on " + this._entityName);
       callback();
     });
     return this;
@@ -94,6 +95,34 @@ Crafty.c('Actor', {
   img: function(filename) {
     this.requires('Image');
     this.image(filename);
+    return this;
+  },
+
+  mouseDown: function(callback) {
+    this.requires('Mouse').bind('MouseDown', function(e) {
+      callback(e);
+    });
+    return this;
+  },
+
+  mouseUp: function(callback) {
+    this.requires('Mouse').bind('MouseUp', function(e) {
+      callback(e);
+    });
+    return this;
+  },
+
+  mouseOut: function(callback) {
+    this.requires('Mouse').bind('MouseOut', function(e) {
+      callback(e);
+    });
+    return this;
+  },
+
+  mouseOver: function(callback) {
+    this.requires('Mouse').bind('MouseOver', function(e) {
+      callback(e);
+    });
     return this;
   },
 

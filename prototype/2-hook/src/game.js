@@ -1,4 +1,3 @@
-
 Game = {
   // This defines our grid's size and the size of each of its tiles
   view: {
@@ -29,7 +28,7 @@ Game = {
         Crafty.e('Asteroid');
       }
 
-      Crafty.e('Destruction');
+      //Crafty.e('Destruction');
 
       // Left wall
       Crafty.e('Actor, Wall').size(1, Game.view.height).move(1, 0)
@@ -43,8 +42,6 @@ Game = {
         });
 
       Crafty.e('AsteroidManager');
-
-      //Crafty.e('Spawner').spawn('Enemy').between(extern('enemy_spawn_min'), extern('enemy_spawn_max'));
 
       Crafty.e('Actor, Text').textFont({ size: '18px' })
         .bind('EnterFrame', function() {
@@ -60,6 +57,14 @@ Game = {
           if (Crafty('Player') != null && Crafty('Player').points != null) {
             this.text("Altitude: " + Math.round(Crafty.viewport.y));
           }
+      });
+
+      Crafty.e('Actor').bind('EnterFrame', function() {
+        if (!window.mouseDown) {
+          Crafty('Player').grappling = false;
+        } else {
+          Crafty('Player').grappling = true;
+        }
       });
 
       Crafty.viewport.follow(player);
@@ -100,13 +105,15 @@ Crafty.c('Player', {
       })
       .collideWith('Wall')
       .gravity()
-      // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
       .bind("EnterFrame", function(frameData) {
+        // Velocity when holding UP/W
+        // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
         if (this.isDown("W") || this.isDown("UP_ARROW")) {
           this.vy = Math.max(-7, this._vy - 0.5); // apply upward velocity gradually to cap
           this.onAsteroid = null;
         }
 
+        // Mining when holding space
         if (this.isDown('SPACE') && this.onAsteroid != null && this.onAsteroid.health > 0) {
           this.onAsteroid.health -= 1;
           this.points += 1;
@@ -116,7 +123,20 @@ Crafty.c('Player', {
           }
           console.log(this.onAsteroid.health);
         }
-      })
+
+        if (this.targetAsteroid != null && this.grappling == true) {
+          var xDir = this.targetAsteroid.x - this.x;
+          var yDir = this.targetAsteroid.y - this.y;
+
+          xDir = xDir > 0 ? 1 : -1;
+          yDir = yDir > 0 ? 1 : -1;
+
+          grapple_speed = extern('grapple_speed');
+          this.x += xDir * grapple_speed;
+          this.y += yDir * grapple_speed;
+        }
+      }
+    );
   }
 });
 
@@ -126,14 +146,39 @@ Crafty.c('Asteroid', {
     this.requires('Actor');
     this.regenerate();
 
+    // When you fall off the bottom of the screen, reappear at the top.
     this.bind('EnterFrame', function() {
       if (this.y >= -(Crafty.viewport.y - Crafty.viewport.height)) {
         this.regenerate();
       }
     });
 
+    // Prevent overlap
     this.collide('Asteroid', function(a) {
       self.regenerate();
+    });
+
+    this.mouseOver(function() {
+      //self.color('#88bbff');
+      //Crafty('Player').targetAsteroid = self;
+    });
+
+    this.mouseOut(function() {
+      //self.color("#888888");
+      //Crafty('Player').targetAsteroid = null;
+      //Crafty('Player').grappling = false;
+    });
+
+    this.mouseDown(function(e) {
+      //Crafty('Player').grappling = true;
+      Crafty('Player').targetAsteroid = self;
+      console.log("Target is " + self);
+      //console.log("Grappling...");
+    });
+
+    this.mouseUp(function() {
+      //Crafty('Player').grappling = false;
+      //console.log("...Stopped");
     });
   },
 
@@ -150,37 +195,6 @@ Crafty.c('Asteroid', {
     // This formula is flawed. Oh well.
     this.health = 0.5 + (this.w * this.h) / (64*64) * (1.25 - 0.5);
     this.health = Math.round(30 * this.health);
-  }
-});
-
-Crafty.c('Enemy', {
-  init: function() {
-    var self = this;
-    this.requires('Actor')
-      .color('green')
-      .size(randomBetween(24, 32), 18)
-      // x: left or right side; y: Player's y, plus higher.
-      .move(randomBetween(0, 100) <= 50 ? Game.view.width - 32 : 0, Crafty('Player').y + randomBetween(100, -300))
-      .velocity(this.x == 0 ? extern('enemy_speed') : -extern('enemy_speed'))
-      .bind('EnterFrame', function() {
-        if (this.x < 0 || this.x > Game.view.width) {
-          this.die();
-        }
-      }).collide('Player', function() {
-        self.die();
-        //var v = self.v.x > 0 ? 1 : -1;
-        //var delta = v * extern('enemy_knockback');
-        p = Crafty('Player');
-        // FREEZE!
-        p.move(p.x, p.y, extern('freeze_duration'));
-        if (extern('enemies_kill') == true)
-        {
-          gameOver();
-        }
-        //p.velocity(p._velocity.x + delta, p._velocity.y);
-        //p.move(p.x + v * extern('enemy_knockback'), p.y + p._velocity.y, 0.5);
-        //p._velocity.x += v * extern('enemy_knockback');
-      });
   }
 });
 
