@@ -121,7 +121,6 @@ Crafty.c('Player', {
             this.points += 10;
             this.onAsteroid.color('#222222');
           }
-          console.log(this.onAsteroid.health);
         }
 
         if (this.targetAsteroid != null && this.grappling == true) {

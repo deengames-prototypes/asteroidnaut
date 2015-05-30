@@ -1,9 +1,20 @@
-// all ur consonlez r belong 2 us ...
+// Capture the existing console (if there is one) -- we still log to it
 if (typeof console  != "undefined" && typeof console.log != 'undefined') {
   console.oldLog = console.log;
 } else {
   console.oldLog = function() {};
 }
+
+// Create a div, styled the way we want
+var div = document.createElement("div");
+div.id = "console";
+div.style.width = "250px";
+div.style.height = "100%";
+div.style.background = "#ccc";
+div.style.overflowY = "auto";
+div.style.float = "right";
+
+document.body.appendChild(div);
 
 console.debug = function(message) {
   console.oldLog(message);
