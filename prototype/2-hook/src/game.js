@@ -125,8 +125,8 @@ Crafty.c('Player', {
         }
 
         if (this.targetAsteroid != null && this.grappling == true) {
-          var xDir = this.targetAsteroid.x - this.x;
-          var yDir = this.targetAsteroid.y - this.y;
+          var xDir = this.targetAsteroid.x + (this.targetAsteroid.w / 2) - this.x;
+          var yDir = this.targetAsteroid.y + (this.targetAsteroid.h / 2) - this.y;
 
           xDir = xDir > 0 ? 1 : -1;
           yDir = yDir > 0 ? 1 : -1;
@@ -159,26 +159,16 @@ Crafty.c('Asteroid', {
     });
 
     this.mouseOver(function() {
-      //self.color('#88bbff');
-      //Crafty('Player').targetAsteroid = self;
+      self.color('#88bbff');
     });
 
     this.mouseOut(function() {
-      //self.color("#888888");
-      //Crafty('Player').targetAsteroid = null;
-      //Crafty('Player').grappling = false;
+      self.color("#888888");
     });
 
     this.mouseDown(function(e) {
-      //Crafty('Player').grappling = true;
       Crafty('Player').targetAsteroid = self;
       console.log("Target is " + self);
-      //console.log("Grappling...");
-    });
-
-    this.mouseUp(function() {
-      //Crafty('Player').grappling = false;
-      //console.log("...Stopped");
     });
   },
 
