@@ -59,14 +59,6 @@ Game = {
           }
       });
 
-      Crafty.e('Actor').bind('EnterFrame', function() {
-        if (!window.mouseDown) {
-          Crafty('Player').grappling = false;
-        } else {
-          Crafty('Player').grappling = true;
-        }
-      });
-
       Crafty.viewport.follow(player);
     });
   }
@@ -102,6 +94,10 @@ Crafty.c('Player', {
            // asteroid from below or standing on it. Not when you slide past it.
            self._velocity.y = extern('asteroid_knockback');
         }
+
+        if (self.grappling == true) {
+          self.grappling = false;
+        }
       })
       .collideWith('Wall')
       .gravity()
@@ -124,15 +120,46 @@ Crafty.c('Player', {
         }
 
         if (this.targetAsteroid != null && this.grappling == true) {
-          var xDir = this.targetAsteroid.x + (this.targetAsteroid.w / 2) - this.x;
-          var yDir = this.targetAsteroid.y + (this.targetAsteroid.h / 2) - this.y;
+          // Target the center of the asteroid
+          var targetX = this.targetAsteroid.x + (this.targetAsteroid.w / 2);
+          var targetY = this.targetAsteroid.y +  (this.targetAsteroid.h / 2);
 
-          xDir = xDir > 0 ? 1 : -1;
-          yDir = yDir > 0 ? 1 : -1;
+          var xDiff = targetX - this.x;
+          var yDiff = targetY - this.y;
 
-          grapple_speed = extern('grapple_speed');
-          this.x += xDir * grapple_speed;
-          this.y += yDir * grapple_speed;
+          var xDir = xDiff > 0 ? 1 : -1;
+          var yDir = yDiff > 0 ? 1 : -1;
+
+          grappleSpeed = extern('grapple_speed');
+          // If moving will overshoot, just move enough.
+          var moveX = Math.min(xDir * grappleSpeed, xDiff);
+          var moveY = Math.min(yDir * grappleSpeed, xDiff);
+
+          this.x += moveX;
+          this.y += moveY;
+
+          if (this.hit('Asteroid')) {
+            // Over, under, left, or right?
+            if (Math.abs(xDiff) < Math.abs(yDiff)) {
+              // Horizontal displacement is closer, displace horizontally
+              if (xDiff < 0) { // asteroid is to the left
+                this.x = this.targetAsteroid.x + this.targetAsteroid.w;
+                console.debug("Position to right of asteroid")
+              } else { // asteroid is to the right
+                this.x = this.targetAsteroid.x - this.w;
+                console.debug("Position to left of asteroid")
+              }
+            } else {
+              // Vertical displacement is shorter, displace vertically
+              if (yDiff < 0) { // asteroid is above us
+                this.y = this.targetAsteroid.y + this.targetAsteroid.h;
+                console.debug("Position to bottom of asteroid")
+              } else { // asteroid is below us
+                this.y = this.targetAsteroid.y - this.h;
+                console.debug("Position to top of asteroid")
+              }
+            }
+          }
         }
       }
     );
@@ -166,7 +193,9 @@ Crafty.c('Asteroid', {
     });
 
     this.mouseDown(function(e) {
-      Crafty('Player').targetAsteroid = self;
+      var p = Crafty('Player');
+      p.targetAsteroid = self;
+      p.grappling = true;
       console.log("Target is " + self);
     });
   },
