@@ -28,7 +28,7 @@ Game = {
         Crafty.e('Asteroid');
       }
 
-      //Crafty.e('Destruction');
+      Crafty.e('Destruction');
 
       // Left wall
       Crafty.e('Actor, Wall').size(1, Game.view.height).move(1, 0)
@@ -103,7 +103,7 @@ Crafty.c('Player', {
         if (self.hit('Asteroid')) {
           self.x += -a.normal.x * a.overlap;
           self.y += -a.normal.y * a.overlap;
-          console.log("Bump");
+          self.vx = self.vy = 0;
         }
       })
       .collideWith('Wall')
