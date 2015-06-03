@@ -98,6 +98,13 @@ Crafty.c('Player', {
         if (self.grappling == true) {
           self.grappling = false;
         }
+
+        // Dislodge me if I'm lodged ...
+        if (self.hit('Asteroid')) {
+          self.x += -a.normal.x * a.overlap;
+          self.y += -a.normal.y * a.overlap;
+          console.log("Bump");
+        }
       })
       .collideWith('Wall')
       .gravity()
@@ -132,34 +139,11 @@ Crafty.c('Player', {
 
           grappleSpeed = extern('grapple_speed');
           // If moving will overshoot, just move enough.
-          var moveX = Math.min(xDir * grappleSpeed, xDiff);
-          var moveY = Math.min(yDir * grappleSpeed, xDiff);
+          var moveX = xDir * grappleSpeed;
+          var moveY = yDir * grappleSpeed;
 
           this.x += moveX;
           this.y += moveY;
-
-          if (this.hit('Asteroid')) {
-            // Over, under, left, or right?
-            if (Math.abs(xDiff) < Math.abs(yDiff)) {
-              // Horizontal displacement is closer, displace horizontally
-              if (xDiff < 0) { // asteroid is to the left
-                this.x = this.targetAsteroid.x + this.targetAsteroid.w;
-                console.debug("Position to right of asteroid")
-              } else { // asteroid is to the right
-                this.x = this.targetAsteroid.x - this.w;
-                console.debug("Position to left of asteroid")
-              }
-            } else {
-              // Vertical displacement is shorter, displace vertically
-              if (yDiff < 0) { // asteroid is above us
-                this.y = this.targetAsteroid.y + this.targetAsteroid.h;
-                console.debug("Position to bottom of asteroid")
-              } else { // asteroid is below us
-                this.y = this.targetAsteroid.y - this.h;
-                console.debug("Position to top of asteroid")
-              }
-            }
-          }
         }
       }
     );
