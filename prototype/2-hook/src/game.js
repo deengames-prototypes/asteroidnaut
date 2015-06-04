@@ -214,7 +214,7 @@ Crafty.c('Destruction', {
           this.y -= extern('destruction_speed');
         })
         .collide('Player', function() {
-          //gameOver();
+          gameOver();
         });
   }
 });
