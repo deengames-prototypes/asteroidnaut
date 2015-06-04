@@ -1,8 +1,7 @@
 externs = {
   "destruction_speed": 4,
-
   "asteroids": 15,
   "asteroid_knockback": 5,
-
-  "grapple_speed": 10
+  "grapple_speed": 10,
+  "gravity": 0.2
 }

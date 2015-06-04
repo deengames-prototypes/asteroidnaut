@@ -101,9 +101,10 @@ Crafty.c('Player', {
 
         // Dislodge me if I'm lodged ...
         if (self.hit('Asteroid')) {
-          self.x += -a.normal.x * a.overlap;
-          self.y += -a.normal.y * a.overlap;
           self.vx = self.vy = 0;
+          // restore gravity
+          self.ay = extern('gravity');
+          console.debug('Gravity ON!');
         }
       })
       .collideWith('Wall')
@@ -180,7 +181,10 @@ Crafty.c('Asteroid', {
       var p = Crafty('Player');
       p.targetAsteroid = self;
       p.grappling = true;
-      console.log("Target is " + self);
+      //p.antigravity();
+      p.ay = 0;
+      p.vy = 0.01;
+      console.debug("Gravity OFF")
     });
   },
 
@@ -210,7 +214,7 @@ Crafty.c('Destruction', {
           this.y -= extern('destruction_speed');
         })
         .collide('Player', function() {
-          gameOver();
+          //gameOver();
         });
   }
 });

@@ -62,7 +62,6 @@ Crafty.c('Actor', {
     this.bind("Moved", function(evt) {
       var hitData = this.hit(tag);
       if (hitData != false) {
-        // displace backward so we're no longer overlapping
         this[evt.axis] = evt.oldValue;
         // stop, even with gravity
         if (evt.axis === "y") this.vy = 0;
@@ -70,7 +69,11 @@ Crafty.c('Actor', {
         if (callback != null) {
           // Invoke callback once per object hit
           for (var i = 0; i < hitData.length; i++) {
-            callback(hitData[i]);
+            var data = hitData[i];
+            callback(data);
+            // displace backward so we're no longer overlapping
+            this.x += -data.normal.x * data.overlap;
+            this.y += -data.normal.y * data.overlap;
           }
         }
       }
