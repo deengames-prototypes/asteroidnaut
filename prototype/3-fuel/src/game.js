@@ -41,8 +41,6 @@ Game = {
           this.y = -Crafty.viewport.y;
         });
 
-      Crafty.e('AsteroidManager');
-
       Crafty.e('Actor, Text').textFont({ size: '18px' })
         .bind('EnterFrame', function() {
           this.move(0, -Crafty.viewport.y);
@@ -56,6 +54,15 @@ Game = {
           this.move(Game.view.width - 100, -Crafty.viewport.y);
           if (Crafty('Player') != null && Crafty('Player').points != null) {
             this.text("Altitude: " + Math.round(Crafty.viewport.y));
+          }
+      });
+
+      Crafty.e('Actor, Text').textFont({ size: '14px' })
+        .bind('EnterFrame', function() {
+          this.move(150, -Crafty.viewport.y);
+          if (Crafty('Player') != null && Crafty('Player').fuel != null) {
+            // Round to one decimal digit
+            this.text("Fuel: " + Math.round(Crafty('Player').fuel * 10) / 10);
           }
       });
 
@@ -77,6 +84,7 @@ Crafty.c('Player', {
   init: function() {
     var self = this;
     this.points = 0;
+    this.fuel = extern('fuel_initial');
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -112,13 +120,14 @@ Crafty.c('Player', {
       .bind("EnterFrame", function(frameData) {
         // Velocity when holding UP/W
         // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
-        if (this.isDown("W") || this.isDown("UP_ARROW")) {
+        if (this.fuel > 0 && (this.isDown("W") || this.isDown("UP_ARROW"))) {
           this.vy = Math.max(-7, this._vy - 0.5); // apply upward velocity gradually to cap
+          this.fuel -= extern('fuel_consumption'); // consume fuel
           this.onAsteroid = null;
         }
 
         // Mining when holding space
-        if (this.isDown('SPACE') && this.onAsteroid != null && this.onAsteroid.health > 0) {
+        if ((this.isDown('SPACE') || extern('auto_mine') == true) && this.onAsteroid != null && this.onAsteroid.health > 0) {
           this.onAsteroid.health -= 1;
           this.points += 1;
           if (this.onAsteroid.health == 0) {
@@ -127,6 +136,7 @@ Crafty.c('Player', {
           }
         }
 
+        // Grappling towards the target asteroid
         if (this.targetAsteroid != null && this.grappling == true) {
           // Target the center of the asteroid
           var targetX = this.targetAsteroid.x + (this.targetAsteroid.w / 2);
@@ -145,6 +155,11 @@ Crafty.c('Player', {
 
           this.x += moveX;
           this.y += moveY;
+        }
+
+        // Recharge fuel if we're not moving
+        if (this.vx == 0 && this.vy == 0) {
+          this.fuel += extern('fuel_generation');
         }
       }
     );
