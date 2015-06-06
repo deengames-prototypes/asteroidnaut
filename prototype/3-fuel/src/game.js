@@ -102,16 +102,18 @@ Crafty.c('Player', {
         if (self.y > a.obj.y // Player is under. Or possibly beside, too.
            && self.grappling == true
            && self._velocity.y == 0 // vY is always zero when bumping the
-           && extern('flip_on_asteroid') == true
          ) {
-           // asteroid from below or standing on it. Not when you slide past it.
-           self.y = a.obj.y - self.h - 8;
-           // If beside, go on top
-           if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
-             self.x = a.obj.x;
-           }
+           if (extern('flip_on_asteroid') == true) {
 
-           self.ay = extern('gravity');
+             // asteroid from below or standing on it. Not when you slide past it.
+             self.y = a.obj.y - self.h - 8;
+             // If beside, go on top
+             if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
+               self.x = a.obj.x;
+             }
+
+             self.ay = extern('gravity');
+           }
         }
 
         if (self.grappling == true) {
@@ -119,7 +121,7 @@ Crafty.c('Player', {
         }
 
         // Dislodge me if I'm lodged ...
-        if (self.hit('Asteroid')) {
+        if (self.hit('Asteroid') && extern('latch_onto_asteroid') != true) {
           self.vx = self.vy = 0;
           // restore gravity
           self.ay = extern('gravity');
@@ -148,6 +150,16 @@ Crafty.c('Player', {
             this.points += 10;
             this.onAsteroid.color('#222222');
           }
+        }
+
+        // If latched, unlatch on move
+        if (extern('latch_onto_asteroid') == true && (
+          this.isDown("W") || this.isDown("UP_ARROW") ||
+          this.isDown("S") || this.isDown("DOWN_ARROW") ||
+          this.isDown("A") || this.isDown("LEFT_ARROW") ||
+          this.isDown("D") || this.isDown("RIGHT_ARROW")
+        )) {
+          self.ay = extern('gravity');
         }
 
         // Grappling towards the target asteroid
@@ -212,8 +224,7 @@ Crafty.c('Asteroid', {
       p.grappling = true;
       //p.antigravity();
       p.ay = 0;
-      p.vy = 0.01;
-      console.debug("Gravity OFF")
+      p.vy = -0.01; // hack to keep collision detection working
     });
   },
 

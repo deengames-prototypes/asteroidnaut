@@ -12,5 +12,6 @@ externs = {
   "fuel_initial": 30,
 
   "enable_fuel": true,
-  "flip_on_asteroid": false  
+  "flip_on_asteroid": false,
+  "latch_onto_asteroid": false
 }
