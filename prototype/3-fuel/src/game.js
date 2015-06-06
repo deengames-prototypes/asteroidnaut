@@ -100,8 +100,18 @@ Crafty.c('Player', {
         }
 
         if (self.y > a.obj.y // Player is under. Or possibly beside, too.
-           && self._velocity.y == 0) { // vY is always zero when bumping the
+           && self.grappling == true
+           && self._velocity.y == 0 // vY is always zero when bumping the
+           && extern('flip_on_asteroid') == true
+         ) {
            // asteroid from below or standing on it. Not when you slide past it.
+           self.y = a.obj.y - self.h - 8;
+           // If beside, go on top
+           if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
+             self.x = a.obj.x;
+           }
+
+           self.ay = extern('gravity');
         }
 
         if (self.grappling == true) {
@@ -113,7 +123,6 @@ Crafty.c('Player', {
           self.vx = self.vy = 0;
           // restore gravity
           self.ay = extern('gravity');
-          console.debug('Gravity ON!');
         }
       })
       .collideWith('Wall')
