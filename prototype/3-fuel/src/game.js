@@ -57,14 +57,16 @@ Game = {
           }
       });
 
-      Crafty.e('Actor, Text').textFont({ size: '14px' })
-        .bind('EnterFrame', function() {
-          this.move(150, -Crafty.viewport.y);
-          if (Crafty('Player') != null && Crafty('Player').fuel != null) {
-            // Round to one decimal digit
-            this.text("Fuel: " + Math.round(Crafty('Player').fuel * 10) / 10);
-          }
-      });
+      if (extern('enable_fuel') == true) {
+        Crafty.e('Actor, Text').textFont({ size: '14px' })
+          .bind('EnterFrame', function() {
+            this.move(150, -Crafty.viewport.y);
+            if (Crafty('Player') != null && Crafty('Player').fuel != null) {
+              // Round to one decimal digit
+              this.text("Fuel: " + Math.round(Crafty('Player').fuel * 10) / 10);
+            }
+        });
+      }
 
       Crafty.viewport.follow(player);
     });
@@ -100,7 +102,6 @@ Crafty.c('Player', {
         if (self.y > a.obj.y // Player is under. Or possibly beside, too.
            && self._velocity.y == 0) { // vY is always zero when bumping the
            // asteroid from below or standing on it. Not when you slide past it.
-           self._velocity.y = extern('asteroid_knockback');
         }
 
         if (self.grappling == true) {
@@ -120,7 +121,11 @@ Crafty.c('Player', {
       .bind("EnterFrame", function(frameData) {
         // Velocity when holding UP/W
         // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
-        if (this.fuel > 0 && (this.isDown("W") || this.isDown("UP_ARROW"))) {
+        if (
+          (this.isDown("W") || this.isDown("UP_ARROW")) && // Pressed up or space, plus one of:
+          ((extern('enable_fuel') == true && this.fuel > 0) || // Use fuel; fuel > 0, or
+          (!extern('enable_fuel'))) // don't use fuel
+        ) {
           this.vy = Math.max(-7, this._vy - 0.5); // apply upward velocity gradually to cap
           this.fuel -= extern('fuel_consumption'); // consume fuel
           this.onAsteroid = null;
