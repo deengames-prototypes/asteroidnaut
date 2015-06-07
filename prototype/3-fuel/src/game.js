@@ -87,6 +87,9 @@ Crafty.c('Player', {
     var self = this;
     this.points = 0;
     this.fuel = extern('fuel_initial');
+    this.useLatch = extern('latch_onto_asteroid') || queryParam('latch');
+    this.useFlip = extern('flip_on_asteroid') || queryParam('flip');
+    console.debug("Latch=" + this.useLatch + " and flip=" + this.useFlip);
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -103,7 +106,7 @@ Crafty.c('Player', {
            && self.grappling == true
            && self._velocity.y == 0 // vY is always zero when bumping the
          ) {
-           if (extern('flip_on_asteroid') == true) {
+           if (self.useFlip) {
 
              // asteroid from below or standing on it. Not when you slide past it.
              self.y = a.obj.y - self.h - 8;
@@ -121,7 +124,7 @@ Crafty.c('Player', {
         }
 
         // Dislodge me if I'm lodged ...
-        if (self.hit('Asteroid') && extern('latch_onto_asteroid') != true) {
+        if (self.hit('Asteroid') && !self.useLatch) {
           self.vx = self.vy = 0;
           // restore gravity
           self.ay = extern('gravity');
@@ -153,7 +156,7 @@ Crafty.c('Player', {
         }
 
         // If latched, unlatch on move
-        if (extern('latch_onto_asteroid') == true && (
+        if (self.useLatch && (
           this.isDown("W") || this.isDown("UP_ARROW") ||
           this.isDown("S") || this.isDown("DOWN_ARROW") ||
           this.isDown("A") || this.isDown("LEFT_ARROW") ||
