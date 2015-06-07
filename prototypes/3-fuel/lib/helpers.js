@@ -88,7 +88,9 @@ function weightedRandom(hash) {
   }
 };
 
-// Returns the value of a query parameter. Probably as a string...
+// Returns the value of a query parameter. Probably as a string.
+// Original source: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+// It's probably very slow.
 function queryParam(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
