@@ -13,5 +13,6 @@ externs = {
 
   "enable_fuel": true,
   "flip_on_asteroid": false,
-  "latch_onto_asteroid": false
+  "latch_onto_asteroid": false,
+  "max_fuel": 100
 }

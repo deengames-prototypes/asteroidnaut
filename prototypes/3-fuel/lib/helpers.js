@@ -22,8 +22,8 @@ function randomBetween(a, b) {
 }
 
 // Get a variable from external.json.
-function extern(key) {
-  if (window.externs[key] === undefined) {
+function extern(key, hideWarning) {
+  if (window.externs[key] === undefined && !hideWarning) {
     console.error("Missing extern: " + key);
     return undefined;
   } else {
@@ -90,10 +90,15 @@ function weightedRandom(hash) {
 
 // Returns the value of a query parameter. Probably as a string.
 // Original source: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-// It's probably very slow.
+// It's probably very slow. We should cache these in a hash.
 function queryParam(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
     var results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+// A combination of extern and queryParam. Returns query param first, then extern.
+function config(name) {
+  return  queryParam(name) || extern(name, true);
 }

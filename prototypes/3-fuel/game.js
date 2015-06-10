@@ -205,6 +205,9 @@ Crafty.c('Player', {
         // Recharge fuel if we're not moving
         if (this.vx == 0 && this.vy == 0) {
           this.fuel += extern('fuel_generation');
+          if (config('max_fuel') > 0) {
+            this.fuel = Math.min(config('max_fuel'), this.fuel);
+          }
         }
       }
     );
