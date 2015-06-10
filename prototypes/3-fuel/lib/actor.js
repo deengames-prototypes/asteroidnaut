@@ -57,8 +57,11 @@ Crafty.c('Actor', {
 
   // Collide against a solid object, and resolve the collision so that we're no
   // longer overlapping with the target. For non-resolving, use collide.
-  // The callback receives an object (the thing that's hit).
-  collideWith: function(tag, callback) {
+  // The callback receives an object (the thing that's hit) before resolving the collision.
+  // Setting resolveFirst to true resolves the collision, then executes the callbacks.
+  collideWith: function(tag, callback, resolveFirst) {
+    resolveFirst = typeof resolveFirst !== 'undefined' ? resolveFirst : true;
+    
     this.bind("Moved", function(evt) {
       var hitData = this.hit(tag);
       if (hitData != false) {
@@ -70,10 +73,19 @@ Crafty.c('Actor', {
           // Invoke callback once per object hit
           for (var i = 0; i < hitData.length; i++) {
             var data = hitData[i];
-            callback(data);
+            if (!resolveFirst) {
+              callback(data);
+            }
             // displace backward so we're no longer overlapping
             this.x += -data.normal.x * data.overlap;
             this.y += -data.normal.y * data.overlap;
+          }
+          
+          if (resolveFirst) {
+            // Execute all the callbacks now if post-resolve.
+            for (var i = 0; i < hitData.length; i++) {
+              callback(hitData[i]);
+            }
           }
         }
       }

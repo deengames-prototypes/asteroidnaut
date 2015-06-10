@@ -89,7 +89,6 @@ Crafty.c('Player', {
     this.fuel = extern('fuel_initial');
     this.useLatch = extern('latch_onto_asteroid') || queryParam('latch');
     this.useFlip = extern('flip_on_asteroid') || queryParam('flip');
-    console.debug("Latch=" + this.useLatch + " and flip=" + this.useFlip);
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -104,18 +103,25 @@ Crafty.c('Player', {
 
         if (self.y > a.obj.y // Player is under. Or possibly beside, too.
            && self.grappling == true
-           && self._velocity.y == 0 // vY is always zero when bumping the
+           && self._velocity.y == 0 // vY is always zero when bumping the asteroid from the bottom
          ) {
            if (self.useFlip) {
-
-             // asteroid from below or standing on it. Not when you slide past it.
-             self.y = a.obj.y - self.h - 8;
-             // If beside, go on top
-             if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
-               self.x = a.obj.x;
-             }
-
-             self.ay = extern('gravity');
+             var isUnderNotBesideAsteroid = self.y >= a.obj.y + a.obj.h && 
+              self.x + self.w >= a.obj.x && self.x < a.obj.x + a.obj.w;
+              
+              if (self.useLatch && isUnderNotBesideAsteroid) {
+                console.log("Undarrr");                
+                // If we have flip and latch both, don't flip from the bottom. We will latch on.
+              }
+              
+              // asteroid from below or standing on it. Not when you slide past it.
+              self.y = a.obj.y - self.h - 8;
+              // If beside, go on top
+              if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
+                self.x = a.obj.x;
+              }
+              
+              self.ay = extern('gravity');
            }
         }
 
@@ -129,7 +135,7 @@ Crafty.c('Player', {
           // restore gravity
           self.ay = extern('gravity');
         }
-      })
+      }, true)
       .collideWith('Wall')
       .gravity()
       .bind("EnterFrame", function(frameData) {
@@ -156,7 +162,7 @@ Crafty.c('Player', {
         }
 
         // If latched, unlatch on move
-        if (self.useLatch && (
+        if (self.useLatch && self.ay == 0 && (
           this.isDown("W") || this.isDown("UP_ARROW") ||
           this.isDown("S") || this.isDown("DOWN_ARROW") ||
           this.isDown("A") || this.isDown("LEFT_ARROW") ||
