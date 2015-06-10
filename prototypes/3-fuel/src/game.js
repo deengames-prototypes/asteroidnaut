@@ -89,6 +89,8 @@ Crafty.c('Player', {
     this.fuel = extern('fuel_initial');
     this.useLatch = extern('latch_onto_asteroid') || queryParam('latch');
     this.useFlip = extern('flip_on_asteroid') || queryParam('flip');
+    if (this.useLatch) { console.debug("Latch ON" )};
+    if (this.useFlip) { console.debug("Flip ON" )};
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -106,22 +108,30 @@ Crafty.c('Player', {
            && self._velocity.y == 0 // vY is always zero when bumping the asteroid from the bottom
          ) {
            if (self.useFlip) {
+             // Flip up if flipping is enabled
              var isUnderNotBesideAsteroid = self.y >= a.obj.y + a.obj.h && 
               self.x + self.w >= a.obj.x && self.x < a.obj.x + a.obj.w;
               
+              // If flip and latch are enabled, don't flip if we hit the bottom
               if (self.useLatch && isUnderNotBesideAsteroid) {
                 console.log("Undarrr");                
                 // If we have flip and latch both, don't flip from the bottom. We will latch on.
-              }
-              
-              // asteroid from below or standing on it. Not when you slide past it.
-              self.y = a.obj.y - self.h - 8;
-              // If beside, go on top
-              if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
-                self.x = a.obj.x;
-              }
-              
+              } else {              
+                // asteroid from below or standing on it. Not when you slide past it.
+                self.y = a.obj.y - self.h - 8;
+                // If beside, go on top
+                if (self.x < a.obj.x || self.x > a.obj.x + a.obj.w) {
+                  self.x = a.obj.x;
+                }
+                
+                // Flipping, latching, but didn't bump the bottom? Restore gravity
+                self.ay = extern('gravity');
+              }              
+           } else {
+             // Not flipping. Restore gravity based on latching on/off. 
+             if (!self.useLatch) {
               self.ay = extern('gravity');
+             }
            }
         }
 
