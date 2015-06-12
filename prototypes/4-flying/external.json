@@ -15,6 +15,7 @@ externs = {
   "enable_fuel": true,
   "flip_on_asteroid": true,
   "latch_onto_asteroid": true,
+  "asteroids_break": true,
     
   "screens_wide": 2.5
 }

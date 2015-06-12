@@ -24,7 +24,7 @@ Game = {
 
       // Starting asteroid
       Crafty.e('Asteroid').size(64, 24).move(150, 400).velocity(0, 0);
-      for (var i = 1; i < extern('asteroids'); i++) {
+      for (var i = 1; i < config('asteroids'); i++) {
         Crafty.e('Asteroid');
       }
 
@@ -41,10 +41,13 @@ Game = {
         .bind('ViewportScroll', function() {
           this.y = -Crafty.viewport.y;
         });
+        
+        
+      ///////////// UI text controls /////////////
 
       Crafty.e('Actor, Text').textFont({ size: '18px' })
         .bind('EnterFrame', function() {
-          this.move(0, -Crafty.viewport.y);
+          this.move(-Crafty.viewport.x, -Crafty.viewport.y);
           if (Crafty('Player') != null && Crafty('Player').points != null) {
             this.text(Crafty('Player').points + " points");
           }
@@ -52,16 +55,16 @@ Game = {
 
       Crafty.e('Actor, Text').textFont({ size: '14px' })
         .bind('EnterFrame', function() {
-          this.move(Game.view.width - 100, -Crafty.viewport.y);
+          this.move(-Crafty.viewport.x + Game.view.width - 150, -Crafty.viewport.y);
           if (Crafty('Player') != null && Crafty('Player').points != null) {
             this.text("Altitude: " + Math.round(Crafty.viewport.y));
           }
       });
 
-      if (extern('enable_fuel') == true) {
+      if (config('enable_fuel') == true) {
         Crafty.e('Actor, Text').textFont({ size: '14px' })
           .bind('EnterFrame', function() {
-            this.move(150, -Crafty.viewport.y);
+            this.move(-Crafty.viewport.x + 150, -Crafty.viewport.y);
             if (Crafty('Player') != null && Crafty('Player').fuel != null) {
               // Round to one decimal digit
               this.text("Fuel: " + Math.round(Crafty('Player').fuel * 10) / 10);
@@ -87,7 +90,7 @@ Crafty.c('Player', {
   init: function() {
     var self = this;
     this.points = 0;
-    this.fuel = extern('fuel_initial');
+    this.fuel = config('fuel_initial');
     this.useLatch = config('latch_onto_asteroid');
     this.useFlip = config('flip_on_asteroid');
 
@@ -123,12 +126,12 @@ Crafty.c('Player', {
                 }
                 
                 // Flipping, latching, but didn't bump the bottom? Restore gravity
-                self.ay = extern('gravity');
+                self.ay = config('gravity');
               }              
            } else {
              // Not flipping. Restore gravity based on latching on/off. 
              if (!self.useLatch) {
-              self.ay = extern('gravity');
+              self.ay = config('gravity');
              }
            }
         }
@@ -141,7 +144,7 @@ Crafty.c('Player', {
         if (self.hit('Asteroid') && !self.useLatch) {
           self.vx = self.vy = 0;
           // restore gravity
-          self.ay = extern('gravity');
+          self.ay = config('gravity');
         }
       }, true)
       .collideWith('Wall')
@@ -151,16 +154,16 @@ Crafty.c('Player', {
         // https://github.com/craftyjs/Crafty/issues/903#issuecomment-101486265
         if (
           (this.isDown("W") || this.isDown("UP_ARROW")) && // Pressed up or space, plus one of:
-          ((extern('enable_fuel') == true && this.fuel > 0) || // Use fuel; fuel > 0, or
-          (!extern('enable_fuel'))) // don't use fuel
+          ((config('enable_fuel') == true && this.fuel > 0) || // Use fuel; fuel > 0, or
+          (!config('enable_fuel'))) // don't use fuel
         ) {
           this.vy = Math.max(-7, this._vy - 0.5); // apply upward velocity gradually to cap
-          this.fuel -= extern('fuel_consumption'); // consume fuel
+          this.fuel -= config('fuel_consumption'); // consume fuel
           this.onAsteroid = null;
         }
 
         // Mining when holding space
-        if ((this.isDown('SPACE') || extern('auto_mine') == true) && this.onAsteroid != null && this.onAsteroid.health > 0) {
+        if ((this.isDown('SPACE') || config('auto_mine') == true) && this.onAsteroid != null && this.onAsteroid.health > 0) {
           this.onAsteroid.health -= 1;
           this.points += 1;
           if (this.onAsteroid.health == 0) {
@@ -176,7 +179,7 @@ Crafty.c('Player', {
           this.isDown("A") || this.isDown("LEFT_ARROW") ||
           this.isDown("D") || this.isDown("RIGHT_ARROW")
         )) {
-          self.ay = extern('gravity');
+          self.ay = config('gravity');
         }
 
         // Grappling towards the target asteroid
@@ -191,7 +194,7 @@ Crafty.c('Player', {
           var xDir = xDiff > 0 ? 1 : -1;
           var yDir = yDiff > 0 ? 1 : -1;
 
-          grappleSpeed = extern('grapple_speed');
+          grappleSpeed = config('grapple_speed');
           // If moving will overshoot, just move enough.
           var moveX = xDir * grappleSpeed;
           var moveY = yDir * grappleSpeed;
@@ -202,7 +205,7 @@ Crafty.c('Player', {
 
         // Recharge fuel if we're not moving
         if (this.vx == 0 && this.vy == 0) {
-          this.fuel += extern('fuel_generation');
+          this.fuel += config('fuel_generation');
           if (config('max_fuel') > 0) {
             this.fuel = Math.min(config('max_fuel'), this.fuel);
           }
@@ -271,7 +274,7 @@ Crafty.c('Destruction', {
         .size(fullWidth(), 64)
         .move(0, Game.view.height)
         .bind('EnterFrame', function() {
-          this.y -= extern('destruction_speed');
+          this.y -= config('destruction_speed');
         })
         .collide('Player', function() {
           gameOver();
@@ -285,7 +288,7 @@ function gameOver() {
   Crafty.e('Actor, Text')
     .text(points + " points!")
     .textFont({ size: '72px', color: 'white' })
-    .move(16, -Crafty.viewport.y + 200);
+    .move(-Crafty.viewport.x + 16, -Crafty.viewport.y + 200);
 }
 
 function fullWidth() {
