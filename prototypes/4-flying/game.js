@@ -2,7 +2,7 @@ Game = {
   // This defines our grid's size and the size of each of its tiles
   view: {
     width: 400,
-    height: 600,
+    height: 600
   },
 
   start: function() {
@@ -35,8 +35,9 @@ Game = {
         .bind('ViewportScroll', function() {
         this.y = -Crafty.viewport.y;
       });
+      
       // Right wall
-      Crafty.e('Actor, Wall').size(1, Game.view.height).move(Game.view.width, 0)
+      Crafty.e('Actor, Wall').size(1, Game.view.height).move(fullWidth(), 0)
         .bind('ViewportScroll', function() {
           this.y = -Crafty.viewport.y;
         });
@@ -77,8 +78,8 @@ window.addEventListener('load', Game.start);
 
 Crafty.c('Background', {
   init: function() {
-    this.requires('Actor, Image').size(Game.view.width, Game.view.height)
-      .image('images/background.jpg', 'repeat-y');
+    this.requires('Actor, Image').size(fullWidth(), Game.view.height)
+      .image('images/background.jpg', 'repeat');
   }
 });
 
@@ -89,8 +90,6 @@ Crafty.c('Player', {
     this.fuel = extern('fuel_initial');
     this.useLatch = config('latch_onto_asteroid');
     this.useFlip = config('flip_on_asteroid');
-    if (this.useLatch) { console.debug("Latch ON" )};
-    if (this.useFlip) { console.debug("Flip ON" )};
 
     this.requires('Actor, Keyboard, Gravity')
       .size(32, 32)
@@ -254,7 +253,7 @@ Crafty.c('Asteroid', {
     .size(randomBetween(24, 64), randomBetween(24, 64))
     // x: somewhere on-screen
     // Y: above the top of the screen (hence -100), up to ~600px up.
-    .move(randomBetween(0, Game.view.width - 64), -Crafty.viewport.y  - randomBetween(0, 2 * Game.view.height));
+    .move(randomBetween(0, fullWidth() - 64), -Crafty.viewport.y  - randomBetween(0, 2 * Game.view.height));
 
     // Smallest (24x24) has 15 health (~0.5s to mine)
     // Largest (64x64) has 30 health (~1s to mine)
@@ -269,7 +268,7 @@ Crafty.c('Destruction', {
   init: function() {
       this.requires('Actor')
         .color('red')
-        .size(Game.view.width, 64)
+        .size(fullWidth(), 64)
         .move(0, Game.view.height)
         .bind('EnterFrame', function() {
           this.y -= extern('destruction_speed');
@@ -287,4 +286,8 @@ function gameOver() {
     .text(points + " points!")
     .textFont({ size: '72px', color: 'white' })
     .move(16, -Crafty.viewport.y + 200);
+}
+
+function fullWidth() {
+  return Math.round(config('screens_wide') * Game.view.width);
 }

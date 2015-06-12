@@ -1,8 +1,7 @@
 externs = {
   "destruction_speed": 4,
-
-  "asteroids": 15,
-  "auto_mine": true,
+  
+  "asteroids": 37,
 
   "grapple_speed": 10,
   "gravity": 0.2,
@@ -10,9 +9,12 @@ externs = {
   "fuel_generation": 1,
   "fuel_consumption": 0.1,
   "fuel_initial": 30,
+  "max_fuel": 100,
 
+  "auto_mine": true,  
   "enable_fuel": true,
   "flip_on_asteroid": true,
   "latch_onto_asteroid": true,
-  "max_fuel": 100
+    
+  "screens_wide": 2.5
 }
