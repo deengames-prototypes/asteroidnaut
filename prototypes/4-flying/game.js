@@ -87,8 +87,8 @@ Crafty.c('Player', {
     var self = this;
     this.points = 0;
     this.fuel = extern('fuel_initial');
-    this.useLatch = extern('latch_onto_asteroid') || queryParam('latch');
-    this.useFlip = extern('flip_on_asteroid') || queryParam('flip');
+    this.useLatch = config('latch_onto_asteroid');
+    this.useFlip = config('flip_on_asteroid');
     if (this.useLatch) { console.debug("Latch ON" )};
     if (this.useFlip) { console.debug("Flip ON" )};
 
@@ -114,7 +114,6 @@ Crafty.c('Player', {
               
               // If flip and latch are enabled, don't flip if we hit the bottom
               if (self.useLatch && isUnderNotBesideAsteroid) {
-                console.log("Undarrr");                
                 // If we have flip and latch both, don't flip from the bottom. We will latch on.
               } else {              
                 // asteroid from below or standing on it. Not when you slide past it.

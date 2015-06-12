@@ -9,13 +9,14 @@ if (typeof console  != "undefined" && typeof console.log != 'undefined') {
 window.onload = function() {
   var div = document.createElement("div");
   div.id = "console";
-  div.style.width = "250px";
-  div.style.height = "100%";
+  div.style.width = "100%";
+  div.style.height = "100px";
   div.style.background = "#ccc";
   div.style.overflowY = "auto";
   div.style.float = "right";
+  div.style.marginTop = "16px";  
 
-document.body.appendChild(div);
+  document.body.appendChild(div);
 }
 
 console.debug = function(message) {
