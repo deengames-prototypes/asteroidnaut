@@ -167,6 +167,10 @@ Crafty.c('Player', {
           this.onAsteroid.health -= 1;
           this.points += 1;
           if (this.onAsteroid.health == 0) {
+            if (config('asteroids_break') == true) {
+              this.onAsteroid.die();
+            }
+            self.ay = config('gravity');
             this.points += 10;
             this.onAsteroid.color('#222222');
           }
