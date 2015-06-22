@@ -100,5 +100,13 @@ function queryParam(name) {
 
 // A combination of extern and queryParam. Returns query param first, then extern.
 function config(name) {
-  return  queryParam(name) || extern(name, true);
+  var value = queryParam(name) || extern(name, true);
+  // Make it easy to use "if (config(flag)) { ... }"
+  if (value == "true") { 
+    return true;
+  } else if (value == "false") { 
+    return false;
+  } else {
+    return value;
+  }
 }
