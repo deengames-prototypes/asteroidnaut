@@ -1,7 +1,7 @@
 Game = {
   // This defines our grid's size and the size of each of its tiles
   view: {
-    width: 400,
+    width: 500,
     height: 600
   },
 
