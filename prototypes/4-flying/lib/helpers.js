@@ -1,4 +1,5 @@
 /// A collection of random functions. See below.
+window.configCache = {}
 
 // Used as a global click handler. You can check for a global click by using
 // an EnterFrame event and checking if(mouseDown) { ... }
@@ -99,14 +100,32 @@ function queryParam(name) {
 }
 
 // A combination of extern and queryParam. Returns query param first, then extern.
+// Detecting types is hard. JS does a lot of it for us. But, we have to be smarter.
 function config(name) {
+  var cacheValue = window.configCache[name];
+  if (typeof(cacheValue) != "undefined") {
+    return cacheValue;
+  }
+  
   var value = queryParam(name) || extern(name, true);
-  // Make it easy to use "if (config(flag)) { ... }"
-  if (value == "true") { 
+  // Make it easy to use "if (config(flag)) { ... }"  
+  if (value == "true") {
+    window.configCache[name] = true;
     return true;
   } else if (value == "false") { 
+    window.configCache[name] = false;
     return false;
-  } else {
-    return value;
-  }
+  // Specifying decimal values doesn't always work. Detect this case.
+  } else if (typeof(value) == "string") {
+    if (value.indexOf(".") > -1 && parseFloat(value) != NaN) {
+      window.configCache[name] = parseFloat(value);
+      return parseFloat(value);  
+    } else if (parseInt(value) != NaN) {
+      window.configCache[name] = parseInt(value);
+      return parseInt(value);
+    }
+  }  
+  
+  window.configCache[name] = value;
+  return value;  
 }
